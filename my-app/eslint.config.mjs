@@ -11,7 +11,16 @@ const eslintConfig = defineConfig([
   ...nextTs,
 
   // Tailwind CSS
-  ...tailwindcss.configs["flat/recommended"],
+  {
+    plugins: {
+      tailwindcss,
+    },
+    settings: {
+      tailwindcss: {
+        stylesheet: "./app/globals.css",
+      },
+    },
+  },
 
   // Disable ESLint rules that conflict with Prettier
   prettier,
