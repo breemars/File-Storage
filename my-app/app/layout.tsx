@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
 //Website Font
 const poppins = Poppins({
@@ -18,8 +19,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={poppins.variable}>
-      <body className="flex antialiased min-h-full flex-col">{children}</body>
+    <html lang="en" className={cn("font-sans", poppins.variable)}>
+      <body className="flex font-poppins poppins antialiased min-h-full flex-col">
+        {children}
+      </body>
     </html>
   );
 }
