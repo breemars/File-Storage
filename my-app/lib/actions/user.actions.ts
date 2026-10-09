@@ -1,9 +1,10 @@
 "use server"; //should always be run on the server in order to keep the secret key hidden
 import { appwriteConfig } from "../appwrite/config";
-import { createAdminClient } from "../appwrite";
+import { createAdminClient, createSessionClient } from "../appwrite";
 import { Query, ID } from "node-appwrite";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 //Find a user based on email address
 const getUserByEmail = async (email: string) => {
@@ -47,28 +48,36 @@ export const sendEmailOTP = async ({ email }: { email: string }) => {
 //RETURNS THE ACCOUNT ID
 export const beginSignUp = async ({ email }: { email: string }) => {
   //check if user already exists using email, returns if found
-  const existingUser = await getUserByEmail(email);
+  try {
+    const existingUser = await getUserByEmail(email);
 
-  if (existingUser) {
-    return null; //account already exists
+    if (existingUser) {
+      return null; //account already exists
+    }
+
+    //creates a new account ID but does not create the account yet
+    //send OTP to user's email
+    const accountId = await sendEmailOTP({ email });
+    return parseStringify({ accountId });
+  } catch (error) {
+    console.log("Failed to sign-up");
   }
-
-  //creates a new account ID but does not create the account yet
-  //send OTP to user's email
-  const accountId = await sendEmailOTP({ email });
-  return parseStringify({ accountId });
-  //verify OTP and authenticate
 };
 
 export const beginSignIn = async ({ email }: { email: string }) => {
   //check if user already exists using email, returns if found
-  const existingUser = await getUserByEmail(email);
 
-  if (existingUser) {
-    const accountId = await sendEmailOTP({ email });
-    return parseStringify({ accountId });
-  } else {
-    return null; //user does not exist
+  try {
+    const existingUser = await getUserByEmail(email);
+
+    if (existingUser) {
+      const accountId = await sendEmailOTP({ email });
+      return parseStringify({ accountId });
+    } else {
+      return null; //user does not exist
+    }
+  } catch (error) {
+    console.log("Failed to sign-in");
   }
 };
 
@@ -79,7 +88,7 @@ export const verifySecret = async ({
   accountId,
   password,
   email,
-  fullName
+  fullName,
 }: {
   accountId: string;
   password: string;
@@ -120,5 +129,33 @@ export const verifySecret = async ({
     return parseStringify({ sessionId: session.$id });
   } catch (error) {
     handleError(error, "Failed to verify OTP");
+  }
+};
+
+///////////////////////////////////////////
+//Grabs the user's information to display on the home screen or settings maybe
+export const getCurrentUser = async () => {
+  const { tables, account } = await createSessionClient();
+
+  const result = await account.get();
+
+  const user = await tables.getRow({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.usersId,
+    rowId: String(result.$id),
+  });
+
+  return user;
+};
+
+///////////////////////////////
+export const signOutUser = async () => {
+  const { account } = await createSessionClient();
+  try {
+    account.deleteSession({ sessionId: "current" });
+    (await cookies()).delete("appwrite-session");
+    redirect("/sign-in");
+  } catch (error) {
+    handleError(error, "Failed to sign out user");
   }
 };

@@ -110,8 +110,6 @@
   }
 } */
 
-
-
 @layer utilities {
   .center {
     @apply flex h-screen items-center justify-center;
@@ -168,6 +166,27 @@ p {
   font-weight: 400; /* Regular */
   font-size: 16px;
   line-height: 24px;
+}
+
+.menu-items {
+  display: flex;
+  flex-direction: row;
+
+  gap: 10px;
+  padding: 18px;
+  border-radius: 30;
+}
+
+.menu-items:hover {
+  background-color: #fa7275;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.menu-items.menu-selected {
+  background-color: #fa7275;
+  color: white;
+  box-shadow: 0 2px 8px rgba(250, 114, 117, 0.4); /* Subtle colored shadow for active state */
 }
 
 :root {
