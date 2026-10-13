@@ -20,7 +20,7 @@ import FileUploader from "./FileUploader";
 import { signOutUser } from "@/lib/actions/user.actions";
 
 interface Props {
-  ownerId: string;
+  $id: string;
   accountId: string;
   fullName: string;
   avatar: string;
@@ -28,8 +28,7 @@ interface Props {
 }
 
 const MobileNavigation = ({
-  ownerId,
-  accountId,
+  $id: accountId,
   fullName,
   avatar,
   email,
@@ -66,7 +65,7 @@ const MobileNavigation = ({
             <MenuItems />
 
             <div className="flex flex-col justify-between gap-5 pb-5">
-              <FileUploader />
+              <FileUploader accountId={accountId} />
 
               <Button
                 type="submit"

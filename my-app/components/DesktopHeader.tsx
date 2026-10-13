@@ -4,12 +4,12 @@ import Search from "./Search";
 import FileUploader from "./FileUploader";
 import { signOutUser } from "@/lib/actions/user.actions";
 
-const Header = () => {
+const Header = ({ accountId }: { accountId: string }) => {
   return (
     <header className="flex flex-row justify-between">
       <Search />
       <div className="flex flex-row">
-        <FileUploader />
+        <FileUploader accountId={accountId} />
 
         <form
           className="mx-5"
