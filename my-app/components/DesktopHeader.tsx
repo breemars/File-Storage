@@ -6,13 +6,13 @@ import { signOutUser } from "@/lib/actions/user.actions";
 
 const Header = ({ accountId }: { accountId: string }) => {
   return (
-    <header className="flex flex-row justify-between">
+    <header className="flex flex-row justify-between p-3">
       <Search />
-      <div className="flex flex-row">
+      <div className="flex flex-row items-center gap-5 mr-5">
         <FileUploader accountId={accountId} />
 
         <form
-          className="mx-5"
+          className="mt-1"
           action={async () => {
             "use server";
             await signOutUser();

@@ -9,7 +9,7 @@ const MenuItems = () => {
   const url = usePathname();
 
   return (
-    <nav className="">
+    <nav>
       <ul className="flex flex-1 flex-col gap-4 items-center">
         <Link
           href="/"

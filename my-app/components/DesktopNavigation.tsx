@@ -13,19 +13,19 @@ interface Props {
 
 const Sidebar = ({ fullName, avatar, email }: Props) => {
   return (
-    <aside>
+    <aside className="flex flex-col justify-between">
       <Link href="/">
-        <div className="flex flex-row items-center">
-          <Folders size={72} color="#000" strokeWidth={0.5} />
+        <div className="flex flex-row items-center justify-center my-5">
+          <Folders size={60} color="#000" strokeWidth={0.5} />
           <i className="text-3xl hidden lg:block">file storage</i>
         </div>
       </Link>
 
-      <div className="hidden md:block">
+      <div className="hidden md:block mb-30">
         <MenuItems />
       </div>
 
-      <div className="fixed bottom-4 left-4 md:flex flex-row items-center gap-2 bg-rose-50 rounded-4xl p-3 hidden">
+      <div className=" md:flex flex-row items-center gap-2 p-1 hidden">
         {avatar ? (
           <Image src={avatar} alt="profile image" width={44} height={44} />
         ) : (
@@ -33,8 +33,8 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
         )}
 
         <div className="hidden lg:block">
-          <h2>{fullName}</h2>
-          <p>{email}</p>
+          <h3>{fullName}</h3>
+          <small>{email}</small>
         </div>
       </div>
     </aside>

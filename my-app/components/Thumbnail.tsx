@@ -1,7 +1,5 @@
+import { Headset, CircleQuestionMark, StickyNote, Video } from "lucide-react";
 import Image from "next/image";
-import { getFileIcon } from "@/lib/utils";
-
-//might not use
 
 interface Props {
   type: string;
@@ -10,16 +8,41 @@ interface Props {
 }
 
 const Thumbnail = ({ type, extension, url = "" }: Props) => {
-  const isImage = type === "image" && extension !== "svg";
   return (
     <figure>
-      <Image
-        src={isImage ? url : getFileIcon(extension, type)}
-        alt={`thumbnail`}
-        width={100}
-        height={100}
-        className="size-8 object-contain"
-      />
+      {type === "image" && extension !== "svg" && (
+        <Image
+          src={url}
+          alt={`thumbnail`}
+          width={200}
+          height={200}
+          className="size-15 object-fill rounded-4xl"
+        />
+      )}
+
+      {type === "document" && (
+        <div className="bg-blue-100 size-15 rounded-4xl flex items-center justify-center">
+          <StickyNote size={40} color="#1835aa" />
+        </div>
+      )}
+
+      {type === "video" && (
+        <div className="bg-orange-100 size-15 rounded-4xl flex items-center justify-center">
+          <Video size={40} color="#aa4418" />
+        </div>
+      )}
+
+      {type === "audio" && (
+        <div className="bg-green-100 size-15 rounded-4xl flex items-center justify-center">
+          <Headset size={40} color="#18aa49" />
+        </div>
+      )}
+
+      {type === "other" && (
+        <div className="bg-pink-100 size-15 rounded-4xl flex items-center justify-center">
+          <CircleQuestionMark size={40} color="#aa188a" />
+        </div>
+      )}
     </figure>
   );
 };

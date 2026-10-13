@@ -3,9 +3,10 @@
 import { createAdminClient } from "../appwrite";
 import { constructFileUrl, getFileType, parseStringify } from "../utils";
 import { appwriteConfig } from "../appwrite/config";
-import { ID } from "node-appwrite";
+import { ID, Models, Query } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "./user.actions";
 
 interface Props {
   file: File;
@@ -62,4 +63,44 @@ export const uploadFile = async ({ file, accountId, path }: Props) => {
 const handleError = (error: unknown, message: string) => {
   console.log(error, message);
   throw error;
+};
+
+////////////////////////////////////
+
+const createQueries = (currentUser: Models.DefaultRow) => {
+  const queries = [
+    Query.or([
+      Query.equal("owner", [currentUser.$id]),
+      Query.contains("sharedWith", [currentUser.email]),
+    ]),
+  ];
+
+  //search sort limits and more later
+
+  return queries;
+};
+
+export const getFiles = async () => {
+  const { tables } = await createAdminClient();
+
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error("User not found");
+
+    const queries = createQueries(currentUser);
+
+    console.log({ currentUser, queries });
+
+    const files = await tables.listRows({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.filesId,
+      queries,
+    });
+
+    console.log({ files });
+
+    return parseStringify(files);
+  } catch (error) {
+    handleError(error, "Failed to get files");
+  }
 };

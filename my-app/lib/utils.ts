@@ -49,4 +49,29 @@ export const convertFileToUrl = (file: File) => URL.createObjectURL(file);
 
 //generates the URL to preview the file
 export const constructFileUrl = (id: string) =>
-  `${process.env.NEXT_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_APPWRITE_BUCKET}/files/${id}/view?project=${process.env.NEXT_APPWRITE_PROJECT_ID}&impersonateuserid=&mode=admin`;
+  `${process.env.NEXT_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_APPWRITE_BUCKET}/files/${id}/view?project=${process.env.NEXT_APPWRITE_PROJECT_ID}`;
+
+export const convertFileSize = (sizeInBytes: number, digits?: number) => {
+  if (sizeInBytes < 1024) {
+    return sizeInBytes + " Bytes";
+  } else if (sizeInBytes < 1024 * 1024) {
+    const sizeInKB = sizeInBytes / 1024;
+    return sizeInKB.toFixed(digits || 1) + " KB";
+  } else if (sizeInBytes < 1024 * 1024 * 1024) {
+    const sizeInMB = sizeInBytes / (1024 * 1024);
+    return sizeInMB.toFixed(digits || 1) + " MB";
+  } else {
+    const sizeInGB = sizeInBytes / (1024 * 1024 * 1024);
+    return sizeInGB.toFixed(digits || 1) + " GB";
+  }
+};
+
+export const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+};

@@ -168,6 +168,11 @@ p {
   line-height: 24px;
 }
 
+small {
+  color: gray;
+  line-height: 16px;
+}
+
 .menu-items {
   display: flex;
   flex-direction: row;
