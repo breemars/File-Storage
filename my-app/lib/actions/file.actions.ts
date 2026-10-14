@@ -7,6 +7,7 @@ import { ID, Models, Query } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "./user.actions";
+import { parse } from "path";
 
 interface Props {
   file: File;
@@ -73,6 +74,7 @@ const createQueries = (currentUser: Models.DefaultRow) => {
       Query.equal("owner", [currentUser.$id]),
       Query.contains("sharedWith", [currentUser.email]),
     ]),
+    Query.select(["*", "owner.*"]), //grabs all the owner information, can limit to what is needed later: Query.select(["*", "owner.$id", "owner.fullName"]) etc
   ];
 
   //search sort limits and more later
@@ -102,5 +104,107 @@ export const getFiles = async () => {
     return parseStringify(files);
   } catch (error) {
     handleError(error, "Failed to get files");
+  }
+};
+
+//////////////////////////////////////
+
+//RENAME FILE
+export const renameFile = async ({
+  fileId,
+  name,
+  extension,
+  path,
+}: {
+  fileId: string;
+  name: string;
+  extension: string;
+  path: string;
+}) => {
+  const { tables } = await createAdminClient();
+
+  try {
+    const newName = `${name}.${extension}`;
+    const updatedFile = await tables.updateRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.filesId,
+      rowId: fileId,
+      data: {
+        name: newName,
+      },
+    });
+
+    revalidatePath(path);
+    return parseStringify(updatedFile);
+  } catch (error) {
+    handleError(error, "Failed to Rename File");
+  }
+};
+
+//////////////////////////////////////
+
+//SHARE A FILE
+export const updateFileSharedWith = async ({
+  fileId,
+  emails,
+  path,
+}: {
+  fileId: string;
+  emails: string[];
+  path: string;
+}) => {
+  const { tables } = await createAdminClient();
+
+  try {
+    const updatedFile = await tables.updateRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.filesId,
+      rowId: fileId,
+      data: {
+        sharedWith: emails,
+      },
+    });
+
+    revalidatePath(path);
+    return parseStringify(updatedFile);
+  } catch (error) {
+    handleError(error, "Failed to Share File");
+  }
+};
+
+//////////////////////////////////////
+
+//DELETE A FILE
+export const deleteFile = async ({
+  fileId,
+  bucketFileId,
+  path,
+}: {
+  fileId: string;
+  bucketFileId: string;
+  path: string;
+}) => {
+  const { tables, storage } = await createAdminClient();
+
+  try {
+    //Deleting from the metadata table
+    const deleted = await tables.deleteRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.filesId,
+      rowId: fileId,
+    });
+
+    //Deleting from the bucket
+    if (deleted) {
+      await storage.deleteFile({
+        bucketId: appwriteConfig.bucketId,
+        fileId: bucketFileId,
+      });
+    }
+
+    revalidatePath(path);
+    return parseStringify({ status: "success" });
+  } catch (error) {
+    handleError(error, "Failed to Share File");
   }
 };

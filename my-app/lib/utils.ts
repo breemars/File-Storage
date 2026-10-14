@@ -49,7 +49,11 @@ export const convertFileToUrl = (file: File) => URL.createObjectURL(file);
 
 //generates the URL to preview the file
 export const constructFileUrl = (id: string) =>
-  `${process.env.NEXT_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_APPWRITE_BUCKET}/files/${id}/view?project=${process.env.NEXT_APPWRITE_PROJECT_ID}`;
+  `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${id}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
+
+//generates the URL to download the file
+export const constructDownloadUrl = (id: string) =>
+  `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${id}/download?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 
 export const convertFileSize = (sizeInBytes: number, digits?: number) => {
   if (sizeInBytes < 1024) {

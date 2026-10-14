@@ -25,7 +25,7 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
         <MenuItems />
       </div>
 
-      <div className=" md:flex flex-row items-center gap-2 p-1 hidden">
+      <div className=" md:flex flex-row items-center gap-2 p-1 hidden mb-1">
         {avatar ? (
           <Image src={avatar} alt="profile image" width={44} height={44} />
         ) : (
