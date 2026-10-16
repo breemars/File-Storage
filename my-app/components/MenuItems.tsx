@@ -40,7 +40,7 @@ const MenuItems = () => {
           <p className="block md:hidden lg:block">Media</p>
         </Link>
         <Link
-          href="/others"
+          href="/other"
           className={cn("menu-items", url === "/others" && "menu-selected")}
         >
           <ChartPie />

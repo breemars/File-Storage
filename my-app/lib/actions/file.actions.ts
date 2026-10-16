@@ -7,7 +7,6 @@ import { ID, Models, Query } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "./user.actions";
-import { parse } from "path";
 
 interface Props {
   file: File;
@@ -68,7 +67,13 @@ const handleError = (error: unknown, message: string) => {
 
 ////////////////////////////////////
 
-const createQueries = (currentUser: Models.DefaultRow) => {
+const createQueries = (
+  currentUser: Models.DefaultRow,
+  type: string,
+  searchQuery: string,
+  sortQuery: string,
+  limit?: number,
+) => {
   const queries = [
     Query.or([
       Query.equal("owner", [currentUser.$id]),
@@ -77,19 +82,60 @@ const createQueries = (currentUser: Models.DefaultRow) => {
     Query.select(["*", "owner.*"]), //grabs all the owner information, can limit to what is needed later: Query.select(["*", "owner.$id", "owner.fullName"]) etc
   ];
 
-  //search sort limits and more later
+  //If a type is given, add an additional query to the array
+  if (type) {
+    //type audio or video should be sorted into 'media', everything else is as is
+    if (type == "media") {
+      queries.push(Query.equal("type", ["audio", "video"]));
+    } else {
+      queries.push(Query.equal("type", type));
+    }
+  }
+
+  if (searchQuery) {
+    queries.push(Query.contains("name", searchQuery));
+  }
+
+  const [sortBy, orderBy] = sortQuery.split("-");
+  queries.push(
+    orderBy == "asc" ? Query.orderAsc(sortBy) : Query.orderDesc(sortBy),
+  );
+
+  if (limit) {
+    queries.push(Query.limit(limit));
+  }
 
   return queries;
 };
 
-export const getFiles = async () => {
+//input = default value
+//but we also set default values in page.tsx too... two places?
+//def need them here tho
+//defaults get used when no input is given
+export const getFiles = async ({
+  type = "",
+  searchQuery = "",
+  sortQuery = "$createdAt-desc",
+  limit,
+}: {
+  type?: string;
+  searchQuery?: string;
+  sortQuery?: string;
+  limit?: number;
+}) => {
   const { tables } = await createAdminClient();
 
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) throw new Error("User not found");
 
-    const queries = createQueries(currentUser);
+    const queries = createQueries(
+      currentUser,
+      type,
+      searchQuery,
+      sortQuery,
+      limit,
+    );
 
     console.log({ currentUser, queries });
 

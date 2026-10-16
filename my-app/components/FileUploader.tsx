@@ -6,7 +6,9 @@ import { useDropzone } from "react-dropzone";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
-import { uploadFile } from "@/lib/actions/file.actions";
+import { deleteFile, uploadFile } from "@/lib/actions/file.actions";
+import { file } from "zod/v4";
+import { Models } from "node-appwrite";
 
 const FileUploader = ({ accountId }: { accountId: string }) => {
   const [files, setFiles] = useState<File[]>([]); // <> sets the type of the array
@@ -46,8 +48,22 @@ const FileUploader = ({ accountId }: { accountId: string }) => {
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
-  const removeFile = (fileName: string) =>
-    setFiles((prev) => prev.filter((file) => file.name !== fileName));
+  const removeFile = async (fileName: string) => {
+    setFiles((prev) => prev.filter((p) => p.name !== file.name));
+
+    /*
+    I need to locate the file based on the file name first. and then I can delete it. cuz IDK the file object.
+    
+    let success = false;
+
+    success = await deleteFile({
+      fileId: file.$id,
+      bucketFileId: file.bucketFileId,
+      path,
+    });
+
+    if (!success) console.log("Error removing file from upload"); */
+  };
   //add functionality to delete the file from the database here
 
   return (

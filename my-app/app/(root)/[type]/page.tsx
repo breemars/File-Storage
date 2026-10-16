@@ -4,20 +4,32 @@ import { getFiles } from "@/lib/actions/file.actions";
 import { Models } from "node-appwrite";
 
 //Params = access the page type from the URL
-const page = async ({ params }: { params: Promise<{ type: string }> }) => {
+//type?query=searchQuery&sort=sortQuery
+//MUST be called params and searchParams as that is what Next.JS needs
+const page = async ({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ type: string }>;
+  searchParams: Promise<{ query?: string; sort?: string }>;
+}) => {
   const type = ((await params)?.type as string) || "";
-  const files = await getFiles();
+  const { query, sort } = await searchParams;
+  const searchQuery = query ?? "";
+  const sortQuery = sort ?? "$createdAt-desc";
+
+  const files = await getFiles({ type, searchQuery, sortQuery });
 
   return (
     <main>
       <h1 className="capitalize">{type}</h1>
       <div className="flex justify-between mb-5">
-        <p>
+        <p className="mt-1.5">
           Total: <b>0 MB</b>
         </p>
 
         <div className="flex flex-row">
-          <p className="hiddem sm:block">Sort by:</p>
+          <p className="mr-2 mt-1.5 text-gray-500 sm:block">Sort by:</p>
           <Sort />
         </div>
       </div>

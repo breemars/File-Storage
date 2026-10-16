@@ -15,7 +15,7 @@ export const getFileType = (fileName: string) => {
     case "jpeg":
     case "png":
     case "gif":
-      type = "image";
+      type = "images";
       break;
     case "mp4":
     case "mkv":
@@ -31,7 +31,7 @@ export const getFileType = (fileName: string) => {
     case "doc":
     case "docx":
     case "txt":
-      type = "document";
+      type = "documents";
       break;
     default:
       type = "other";

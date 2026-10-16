@@ -10,7 +10,7 @@ interface Props {
 const Thumbnail = ({ type, extension, url = "" }: Props) => {
   return (
     <figure>
-      {type === "image" && extension !== "svg" && (
+      {type === "images" && extension !== "svg" && (
         <Image
           src={url}
           alt={`thumbnail`}
@@ -20,7 +20,7 @@ const Thumbnail = ({ type, extension, url = "" }: Props) => {
         />
       )}
 
-      {type === "document" && (
+      {type === "documents" && (
         <div className="bg-blue-100 size-15 rounded-4xl flex items-center justify-center">
           <StickyNote size={40} color="#1835aa" />
         </div>
