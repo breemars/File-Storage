@@ -1,18 +1,19 @@
-import Sidebar from "@/components/DesktopNavigation";
+import DesktopNavigation from "@/components/DesktopNavigation";
 import Header from "@/components/DesktopHeader";
 import MobileNavigation from "@/components/MobileNavigation";
 import React from "react";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic"; //required bc we are using cookies
+
 const layout = async ({ children }: { children: React.ReactNode }) => {
   const currentUser = await getCurrentUser();
-  //console.log(currentUser);
   if (!currentUser) return redirect("/sign-in");
 
   return (
     <main className="flex h-screen overflow-hidden">
-      <Sidebar {...currentUser} />
+      <DesktopNavigation {...currentUser} />
       <section className="flex h-full flex-1 flex-col">
         <MobileNavigation {...currentUser} />{" "}
         <Header accountId={currentUser.$id} />

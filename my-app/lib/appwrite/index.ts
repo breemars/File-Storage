@@ -3,7 +3,6 @@
 import { Client, Account, TablesDB, Storage, Avatars } from "node-appwrite";
 import { appwriteConfig } from "./config";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 //links to a specific user session, lets users make changes that they are allowed to
 //each user needs their own session to keep their data secure
@@ -16,7 +15,7 @@ export const createSessionClient = async () => {
 
   if (!session || !session.value) {
     console.log("No session found.");
-    redirect("/sign-in");
+    throw Error("No session found");
   }
 
   client.setSession(session.value);

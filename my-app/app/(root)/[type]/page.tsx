@@ -25,7 +25,7 @@ const page = async ({
       <h1 className="capitalize">{type}</h1>
       <div className="flex justify-between mb-5">
         <p className="mt-1.5">
-          Total: <b>0 MB</b>
+          Total: <b>{files.totalUsedSpace} MB</b>
         </p>
 
         <div className="flex flex-row">

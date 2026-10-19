@@ -135,17 +135,21 @@ export const verifySecret = async ({
 ///////////////////////////////////////////
 //Grabs the user's information to display on the home screen or settings maybe
 export const getCurrentUser = async () => {
-  const { tables, account } = await createSessionClient();
+  try {
+    const { tables, account } = await createSessionClient();
 
-  const result = await account.get();
+    const result = await account.get();
 
-  const user = await tables.getRow({
-    databaseId: appwriteConfig.databaseId,
-    tableId: appwriteConfig.usersId,
-    rowId: String(result.$id),
-  });
+    const user = await tables.getRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.usersId,
+      rowId: String(result.$id),
+    });
 
-  return user;
+    return user;
+  } catch (error) {
+    handleError(error, "No user found");
+  }
 };
 
 ///////////////////////////////

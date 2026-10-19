@@ -11,7 +11,7 @@ interface Props {
   email: string;
 }
 
-const Sidebar = ({ fullName, avatar, email }: Props) => {
+const DesktopNavigation = ({ fullName, avatar, email }: Props) => {
   return (
     <aside className="flex flex-col justify-between">
       <Link href="/">
@@ -41,4 +41,4 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
   );
 };
 
-export default Sidebar;
+export default DesktopNavigation;

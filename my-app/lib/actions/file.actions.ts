@@ -51,8 +51,6 @@ export const uploadFile = async ({ file, accountId, path }: Props) => {
         handleError(error, "Failed to create file document in database");
       });
 
-    console.log(newFile);
-
     revalidatePath(path); //revalidate the path to update the UI
     return parseStringify(newFile);
   } catch (error) {
@@ -137,17 +135,45 @@ export const getFiles = async ({
       limit,
     );
 
-    console.log({ currentUser, queries });
-
     const files = await tables.listRows({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.filesId,
       queries,
     });
 
-    console.log({ files });
+    let totalUsedSpace = 0;
 
-    return parseStringify(files);
+    const typesUsedSpace = {
+      images: { size: 0 },
+      documents: { size: 0 },
+      video: { size: 0 },
+      audio: { size: 0 },
+      other: { size: 0 },
+    };
+
+    files.rows.forEach((file) => {
+      totalUsedSpace += file.size;
+
+      if (!type && file.type in typesUsedSpace) {
+        typesUsedSpace[file.type as keyof typeof typesUsedSpace].size +=
+          file.size;
+      }
+    });
+
+    totalUsedSpace = Number((totalUsedSpace / (1024 * 1024)).toFixed(2)); //Converts to MB
+    if (!type) {
+      Object.entries(typesUsedSpace).forEach(([label, data]) => {
+        data.size = Number((data.size / (1024 * 1024)).toFixed(2));
+      });
+    }
+
+    const allFiles = {
+      ...files,
+      totalUsedSpace,
+      typesUsedSpace,
+    };
+
+    return parseStringify(allFiles);
   } catch (error) {
     handleError(error, "Failed to get files");
   }
