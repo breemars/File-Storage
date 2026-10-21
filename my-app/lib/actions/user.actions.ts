@@ -158,7 +158,7 @@ export const getCurrentUser = async () => {
 
     return user;
   } catch (error) {
-    handleError(error, "No user found");
+    console.log("No user found, redirecting to sign-in.");
   }
 };
 
