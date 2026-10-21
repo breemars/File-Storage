@@ -10,7 +10,7 @@ const Card = ({ file }: { file: Models.DefaultRow }) => {
     <Link
       href={file.url}
       target="_blank"
-      className="bg-white rounded-4xl p-5 shadow-gray-200 shadow-md"
+      className="bg-white rounded-4xl p-5 shadow-gray-200 shadow-md max-w-full"
     >
       {/* Display the file thumbnail and its available actions. */}
       <div className="flex justify-between">
