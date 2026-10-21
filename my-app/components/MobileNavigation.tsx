@@ -17,7 +17,6 @@ import { signOutUser } from "@/lib/actions/user.actions";
 
 interface Props {
   $id: string;
-  accountId: string;
   fullName: string;
   avatar: string;
   email: string;
