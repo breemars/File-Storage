@@ -35,6 +35,7 @@ export function OTPModal({
   const [isOpen, setIsOpen] = useState(true);
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isOTPWrong, setIsOTPWrong] = useState(false);
 
   // Verify the OTP and redirect to the homepage if successful.
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -49,8 +50,14 @@ export function OTPModal({
         email,
         fullName,
       });
-      if (sessionId) router.push("/"); //go to homepage
+      if (sessionId) {
+        router.push("/"); //go to homepage
+        setIsOTPWrong(false);
+      } else {
+        setIsOTPWrong(true);
+      }
     } catch (error) {
+      setIsOTPWrong(true);
       console.log(error);
     } finally {
       setIsLoading(false);
@@ -119,7 +126,11 @@ export function OTPModal({
           </Button>
 
           <AlertDialogAction onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? "LOADING..." : "Submit"}
+            {isLoading
+              ? "LOADING..."
+              : isOTPWrong
+                ? "Wrong Code. Try Again?"
+                : "Submit"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
