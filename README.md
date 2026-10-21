@@ -4,7 +4,7 @@ A file storage web application that allows users to upload, organize, manage, pr
 
 File Storage uses **Next.js** to build the application and **Appwrite** to handle authentication, database operations, and file storage. Users can view and download files, search and sort their files, monitor their storage usage, and share files with other users.
 
-![File Storage Dashboard](./screenshots/dashboard_screenshot.png)
+![File Storage Dashboard](./screenshots/dashboard.png)
 
 ### 🚀 Live Demo
 
@@ -14,6 +14,7 @@ You can view the project here: **[View File Storage](https://file-storage-49mc.o
 
 - Create an account and sign in using email OTP verification
 - Upload files up to 50 MB
+- Upload multiple times at once
 - Files are grouped into categories: documents, images, videos, audio, and other
 - Preview files by clicking on them
 - Search for files by name
@@ -134,14 +135,22 @@ There are several features I think could improve this project if I continued to 
 
 ## 📸 Screenshots
 
-### Dashboard
+### Images Page
 
-![File Storage Dashboard](./screenshots/dashboard_screenshot.png)
-
-### File Preview
-
-![File Preview](./screenshots/file_preview_screenshot.png)
+![Images](./screenshots/images.png)
 
 ### File Sharing
 
-![File Sharing](./screenshots/file_sharing_screenshot.png)
+![File Sharing](./screenshots/share.png)
+
+### Sign-Up Page
+
+![Sign-Up](./screenshots/signup.png)
+
+### OTP Modal
+
+![Sign-Up](./screenshots/otp.png)
+
+### Tablet View
+
+![Sign-Up](./screenshots/tablet.png)
