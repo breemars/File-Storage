@@ -14,18 +14,19 @@ interface Props {
   path: string;
 }
 
+// Upload a file to Appwrite and save its metadata in the database.
 export const uploadFile = async ({ file, accountId, path }: Props) => {
   const { storage, tables } = await createAdminClient();
 
   try {
-    const inputFile = InputFile.fromBuffer(file, file.name);
+    const inputFile = InputFile.fromBuffer(file, file.name); // Convert the uploaded file into a format Appwrite can store.
     const bucketFile = await storage.createFile({
       bucketId: appwriteConfig.bucketId,
       fileId: ID.unique(),
       file: inputFile,
     });
 
-    //store metadata about the file in the database
+    // Save the file's metadata, owner, and sharing details in the database.
     const newFile = await tables
       .createRow({
         databaseId: appwriteConfig.databaseId,
@@ -44,6 +45,7 @@ export const uploadFile = async ({ file, accountId, path }: Props) => {
         },
       })
       .catch(async (error) => {
+        // Remove the uploaded file if saving its metadata fails.
         await storage.deleteFile({
           bucketId: appwriteConfig.bucketId,
           fileId: bucketFile.$id,
@@ -51,7 +53,7 @@ export const uploadFile = async ({ file, accountId, path }: Props) => {
         handleError(error, "Failed to create file document in database");
       });
 
-    revalidatePath(path); //revalidate the path to update the UI
+    revalidatePath(path); // Refresh the page data so the UI reflects the changes.
     return parseStringify(newFile);
   } catch (error) {
     handleError(error, "Failed to upload file");
@@ -65,6 +67,7 @@ const handleError = (error: unknown, message: string) => {
 
 ////////////////////////////////////
 
+// Build database queries based on access, filters, sorting, and limits.
 const createQueries = (
   currentUser: Models.DefaultRow,
   type: string,
@@ -72,17 +75,18 @@ const createQueries = (
   sortQuery: string,
   limit?: number,
 ) => {
+  // Include files owned by the user or shared with their email.
   const queries = [
     Query.or([
       Query.equal("owner", [currentUser.$id]),
       Query.contains("sharedWith", [currentUser.email]),
     ]),
-    Query.select(["*", "owner.*"]), //grabs all the owner information, can limit to what is needed later: Query.select(["*", "owner.$id", "owner.fullName"]) etc
+    Query.select(["*", "owner.fullName"]), // Include each file's data and the owner's full name.
   ];
 
-  //If a type is given, add an additional query to the array
+  // Filter files by category when a type is specified.
   if (type) {
-    //type audio or video should be sorted into 'media', everything else is as is
+    // Group audio and video files under the media category, everything else is as is
     if (type == "media") {
       queries.push(Query.equal("type", ["audio", "video"]));
     } else {
@@ -90,15 +94,17 @@ const createQueries = (
     }
   }
 
+  // Filter files by names that match the search query if given
   if (searchQuery) {
     queries.push(Query.contains("name", searchQuery));
   }
 
-  const [sortBy, orderBy] = sortQuery.split("-");
+  const [sortBy, orderBy] = sortQuery.split("-"); // Extract the sort field and direction from the sort query.
   queries.push(
     orderBy == "asc" ? Query.orderAsc(sortBy) : Query.orderDesc(sortBy),
   );
 
+  // Limit the number of files returned when requested.
   if (limit) {
     queries.push(Query.limit(limit));
   }
@@ -106,10 +112,8 @@ const createQueries = (
   return queries;
 };
 
-//input = default value
-//but we also set default values in page.tsx too... two places?
-//def need them here tho
-//defaults get used when no input is given
+// Fetch files using the selected filters and calculate storage usage.
+//Default values get used when no input is given
 export const getFiles = async ({
   type = "",
   searchQuery = "",
@@ -124,9 +128,11 @@ export const getFiles = async ({
   const { tables } = await createAdminClient();
 
   try {
+    // Get the current user before retrieving their accessible files.
     const currentUser = await getCurrentUser();
     if (!currentUser) throw new Error("User not found");
 
+    // Build the database queries from the supplied filters.
     const queries = createQueries(
       currentUser,
       type,
@@ -135,12 +141,14 @@ export const getFiles = async ({
       limit,
     );
 
+    // Retrieve the matching file records from the database.
     const files = await tables.listRows({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.filesId,
       queries,
     });
 
+    // Calculate total storage usage and usage for each file category.
     let totalUsedSpace = 0;
 
     const typesUsedSpace = {
@@ -154,6 +162,7 @@ export const getFiles = async ({
     files.rows.forEach((file) => {
       totalUsedSpace += file.size;
 
+      // Count category usage only when viewing all file types.
       if (!type && file.type in typesUsedSpace) {
         typesUsedSpace[file.type as keyof typeof typesUsedSpace].size +=
           file.size;
@@ -163,10 +172,11 @@ export const getFiles = async ({
     totalUsedSpace = Number((totalUsedSpace / (1024 * 1024)).toFixed(2)); //Converts to MB
     if (!type) {
       Object.entries(typesUsedSpace).forEach(([label, data]) => {
-        data.size = Number((data.size / (1024 * 1024)).toFixed(2));
+        data.size = Number((data.size / (1024 * 1024)).toFixed(2)); //Converts to MB
       });
     }
 
+    // Combine the file results with the calculated storage totals.
     const allFiles = {
       ...files,
       totalUsedSpace,
@@ -182,6 +192,7 @@ export const getFiles = async ({
 //////////////////////////////////////
 
 //RENAME FILE
+// Rename a file by updating its database metadata.
 export const renameFile = async ({
   fileId,
   name,
@@ -196,7 +207,8 @@ export const renameFile = async ({
   const { tables } = await createAdminClient();
 
   try {
-    const newName = `${name}.${extension}`;
+    const newName = `${name}.${extension}`; // Combine the new filename with its extension.
+    // Update the file's name in the database.
     const updatedFile = await tables.updateRow({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.filesId,
@@ -216,6 +228,7 @@ export const renameFile = async ({
 //////////////////////////////////////
 
 //SHARE A FILE
+// Update the list of users who can access a shared file.
 export const updateFileSharedWith = async ({
   fileId,
   emails,
@@ -228,6 +241,7 @@ export const updateFileSharedWith = async ({
   const { tables } = await createAdminClient();
 
   try {
+    // Save the updated sharing permissions in the database.
     const updatedFile = await tables.updateRow({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.filesId,
@@ -247,6 +261,7 @@ export const updateFileSharedWith = async ({
 //////////////////////////////////////
 
 //DELETE A FILE
+// Delete a file's metadata and its stored content in the bucket.
 export const deleteFile = async ({
   fileId,
   bucketFileId,
@@ -259,14 +274,14 @@ export const deleteFile = async ({
   const { tables, storage } = await createAdminClient();
 
   try {
-    //Deleting from the metadata table
+    //Delete from the metadata table
     const deleted = await tables.deleteRow({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.filesId,
       rowId: fileId,
     });
 
-    //Deleting from the bucket
+    //Delete from the bucket if the data record was successful
     if (deleted) {
       await storage.deleteFile({
         bucketId: appwriteConfig.bucketId,

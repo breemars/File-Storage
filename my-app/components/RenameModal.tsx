@@ -16,6 +16,7 @@ const RenameModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const path = usePathname();
 
+  // Rename the file and close the modal if successful.
   const onSubmit = async () => {
     setIsLoading(true);
 
@@ -35,6 +36,7 @@ const RenameModal = ({
   return (
     <div className="flex flex-col gap-5">
       <p className="text-gray-500">Enter the New Name:</p>
+      {/* Removes the extension from the displayed filename. */}
       <Input
         type="text"
         value={name.replace(/\.[^/.]+$/, "")}

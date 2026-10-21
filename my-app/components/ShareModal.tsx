@@ -12,10 +12,11 @@ const ShareModal = ({ file }: { file: Models.DefaultRow }) => {
   const [isLoading, setIsLoading] = useState(false);
   const path = usePathname();
 
+  // Add new users to the file's existing share list.
   const onSubmit = async () => {
     setIsLoading(true);
 
-    //Creates a new string array of the current emails plus any emails the user entered. unique values only.
+    // Combine existing and new emails while removing duplicates.
     const allEmails = [...new Set([...file.sharedWith, ...addEmails])];
 
     await updateFileSharedWith({
@@ -27,6 +28,7 @@ const ShareModal = ({ file }: { file: Models.DefaultRow }) => {
     setIsLoading(false);
   };
 
+  // Remove a user's email from the file's share list.
   const onRemove = async (email: string) => {
     setIsLoading(true);
     const currentEmails = file.sharedWith;
@@ -45,6 +47,7 @@ const ShareModal = ({ file }: { file: Models.DefaultRow }) => {
   return (
     <>
       <div className="flex flex-row gap-3 p-2 border rounded-2xl my-2">
+        {/* Display the file's thumbnail and name. */}
         <Thumbnail type={file.type} extension={file.extension} url={file.url} />
         <div className="flex flex-col gap-2 justify-center">
           <h4>{file.name}</h4>
@@ -56,6 +59,7 @@ const ShareModal = ({ file }: { file: Models.DefaultRow }) => {
           <p>Shared with {file.sharedWith.length} users</p>
         </div>
 
+        {/* List users who currently have access to the file. */}
         <ul className="flex flex-col pt-2 max-h-60 overflow-y-auto">
           {file.sharedWith.map((email: string) => (
             <li
@@ -77,6 +81,7 @@ const ShareModal = ({ file }: { file: Models.DefaultRow }) => {
         <small>
           Seperate email addresses by a comma to share with multiple users
         </small>
+        {/* Accept comma-separated emails and convert them into an array. Also removes whitespace from each individual email. */}
         <Input
           type="email"
           placeholder="Enter Email Addresses"
@@ -85,7 +90,6 @@ const ShareModal = ({ file }: { file: Models.DefaultRow }) => {
             setAddEmails(e.target.value.split(",").map((email) => email.trim()))
           }
         />
-        {/* Splits the emails into an array based on , and also removes the whitespace from each individual email */}
 
         <Button
           onClick={onSubmit}

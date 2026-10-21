@@ -102,14 +102,6 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Dark Mode 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;      
-  }
-} */
-
 @layer utilities {
   .center {
     @apply flex h-screen items-center justify-center;

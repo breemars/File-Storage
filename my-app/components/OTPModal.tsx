@@ -1,12 +1,9 @@
-//Creates a pop-up box using shadcn's alert-dialog
-
-"use client"; //since forms and hooks and whatever
+"use client"; // Enable client-side interactivity for hooks and event handlers.
 
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -34,16 +31,18 @@ export function OTPModal({
   fullName: string;
 }) {
   const router = useRouter();
+  // Track the modal visibility, entered OTP, and loading state.
   const [isOpen, setIsOpen] = useState(true);
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Verify the OTP and redirect to the homepage if successful.
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault(); //prevent form from reloading
     setIsLoading(true);
 
     try {
-      //Call API to verify the OTP
+      // Check the entered code and create a user session if valid.
       const sessionId = await verifySecret({
         accountId,
         password,
@@ -53,15 +52,18 @@ export function OTPModal({
       if (sessionId) router.push("/"); //go to homepage
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
+  // Send a new verification code to the user's email.
   const handleResendOTP = async () => {
-    //call OPT
     await sendEmailOTP({ email });
   };
 
+  // Display a modal for verifying the user's email with a one-time password.
+  //Creates a pop-up box using shadcn's alert-dialog
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
@@ -70,8 +72,11 @@ export function OTPModal({
             Enter your OTP
             <X color="#b0b0b0" onClick={() => setIsOpen(false)} />
           </AlertDialogTitle>
-          <AlertDialogDescription className="flex flex-col items-center w-full space-y-5">
-            <span>We&apos;ve sent a code to {email}</span>
+          <div className="flex flex-col items-center text-center w-full space-y-5">
+            <span className="text-gray-500">
+              We&apos;ve sent a code to {email}
+            </span>
+            {/* Inputs for the six-digit verification code. */}
             <InputOTP
               maxLength={6}
               value={password}
@@ -105,15 +110,11 @@ export function OTPModal({
                 />
               </InputOTPGroup>
             </InputOTP>
-          </AlertDialogDescription>
+          </div>
+          {/* Buttons to resend the code or submit it for verification. */}
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <Button
-            type="button"
-            variant="link"
-            onClick={handleResendOTP}
-            className="sm:mr-50"
-          >
+        <AlertDialogFooter className="sm:flex sm:justify-between">
+          <Button type="button" variant="link" onClick={handleResendOTP}>
             Resend Code
           </Button>
 

@@ -1,11 +1,11 @@
 export { cn } from "cn";
 
-//for passing large payloads, need to do this
+// Convert values to JSON and back to create a serializable copy for passing large payloads
 export const parseStringify = (value: unknown) => {
   return JSON.parse(JSON.stringify(value));
 };
 
-//Returns the file category (type) and the file extension
+//Returns the file category (type) and the file extension based on the file's name
 export const getFileType = (fileName: string) => {
   const extension = fileName.split(".").pop()?.toLowerCase();
   let type = "";
@@ -40,21 +40,15 @@ export const getFileType = (fileName: string) => {
   return { type, extension };
 };
 
-//export const getFileTypeParams = (type: string) => {
-// switch (type) {
-//    case "documents":
-//     return ["document"];
-
-export const convertFileToUrl = (file: File) => URL.createObjectURL(file);
-
-//generates the URL to preview the file
+// Build the URL for viewing a stored file in Appwrite.
 export const constructFileUrl = (id: string) =>
   `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${id}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 
-//generates the URL to download the file
+// Build the URL for downloading a stored file from Appwrite.
 export const constructDownloadUrl = (id: string) =>
   `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${id}/download?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 
+// Convert bytes to a readable file size (KB, MB, or GB).
 export const convertFileSize = (sizeInBytes: number, digits?: number) => {
   if (sizeInBytes < 1024) {
     return sizeInBytes + " Bytes";
@@ -70,6 +64,7 @@ export const convertFileSize = (sizeInBytes: number, digits?: number) => {
   }
 };
 
+// Format a date string into a readable date and time.
 export const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",

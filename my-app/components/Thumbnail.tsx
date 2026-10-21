@@ -7,6 +7,9 @@ interface Props {
   url?: string;
 }
 
+{
+  /* Displays a thumbnail for image files, excluding SVGs, or a related icon for other file types */
+}
 const Thumbnail = ({ type, extension, url = "" }: Props) => {
   return (
     <figure>

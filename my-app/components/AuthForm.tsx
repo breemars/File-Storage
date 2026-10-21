@@ -1,35 +1,26 @@
 "use client";
 
-//Defining a new typescript type
+//Define a new typescript type for the type of form
 type FormType = "sign-in" | "sign-up";
 
-import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import * as z from "zod";
 import Link from "next/link";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { CardFooter } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
 import { beginSignUp, beginSignIn } from "@/lib/actions/user.actions";
 import OTPModal from "./OTPModal";
 
+// Define validation rules for sign-in and sign-up fields.
 const authFormSchema = (formType: FormType) => {
   return z.object({
     fullName:
@@ -52,6 +43,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [accountId, setAccountId] = useState(null);
 
+  // Select the validation rules based on the current form type.
+  // Initialize the form with validation and empty default values.
   const formSchema = authFormSchema(type);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,11 +54,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
     },
   });
 
+  // Handle form submission for sign-in and sign-up.
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setErrorMessage("");
-    //also for loggin in???
-    console.log("submitted");
 
     try {
       if (type === "sign-in") {
@@ -96,6 +88,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
+            {/* Show the full-name field only during sign-up. */}
             {type === "sign-up" && (
               <Controller
                 name="fullName"
@@ -117,6 +110,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 )}
               />
             )}
+            {/* Email address field */}
             <Controller
               name="email"
               control={form.control}
@@ -138,6 +132,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
             />
           </FieldGroup>
 
+          {/* Disable submission while the authentication request is processing. */}
           <Button
             type="submit"
             className="w-full my-5 p-5"
@@ -147,6 +142,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
           </Button>
         </form>
 
+        {/* Provide a link to switch between sign-in and sign-up. */}
         <div className="body-2 flex justify-center">
           <p className="text-light-100">
             {type === "sign-in"
@@ -161,6 +157,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
           </Link>
         </div>
 
+        {/* Display an error message when authentication is unsuccessful. */}
         {errorMessage && (
           <p className="text-red-600 flex justify-center pt-8">
             {errorMessage}
@@ -169,6 +166,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       </div>
 
       {/* OTP Verification */}
+      {/* Open the OTP verification modal once an account ID is available. */}
       {accountId && (
         <OTPModal
           email={form.getValues("email")}

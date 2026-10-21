@@ -25,6 +25,7 @@ import { Models } from "node-appwrite";
 import { useRouter } from "next/navigation";
 import CardActionsDropdown from "@/components/CardActionsDropdown";
 
+// Set up the initial data for each file type in the charts.
 const chartData = [
   {
     type: "documents",
@@ -54,6 +55,7 @@ const chartData = [
   },
 ];
 
+// Define the labels and colors used for each file type in the charts.
 const chartConfig = {
   images: {
     label: "Images",
@@ -77,6 +79,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+// Set up the data used to display the total storage chart.
 const totalChartData = [
   { amount: 50000000000000000000000, fill: "var(--color-primary)" },
 ];
@@ -87,13 +90,14 @@ const Page = () => {
   const router = useRouter();
   const [updatedChartData, setUpdatedChartData] = useState(chartData);
 
-  //Gets the file size data and stores the files to display the most recent ones
+  // Fetch file data on page load and update the storage totals and charts.
   useEffect(() => {
     const fetchData = async () => {
       const files = await getFiles({});
       setResults(files.rows);
       setTotalUsedSpace(files.totalUsedSpace);
 
+      // Update each file type in the chartData with its actual storage usage
       const updatedData = chartData.map((item) => ({
         ...item,
         amount: files.typesUsedSpace[item.type].size,
@@ -103,7 +107,7 @@ const Page = () => {
     fetchData();
   }, []);
 
-  //Displays the search results when a dropdown result is click
+  // Navigate to the relevant file page when a recent upload is clicked.
   const handleClickItem = (file: Models.DefaultRow) => {
     router.push(
       `/${file.type === "video" || file.type == "audio" ? "media" : file.type}?query=${file.name}`,
@@ -111,11 +115,14 @@ const Page = () => {
   };
 
   return (
-    <div className="md:flex md:flex-row">
+    <div className="md:flex md:flex-row md:gap-10 lg:gap-0">
+      {/* Display the welcome message */}
       <div className="flex flex-col gap-10">
         <div className=" max-w-125 p-6 rounded-lg bg-primary border border-t-0 shadow-lg text-white">
           <h1>Welcome Back!</h1>
         </div>
+
+        {/* Display the usage summary */}
         <div className="flex flex-col gap-5 max-w-125 p-6 rounded-lg bg-white border border-t-0 shadow-lg">
           <h3>Total Storage Used by File Type</h3>
 
@@ -135,13 +142,15 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col md:hidden lg:flex">
+        {/* Show total storage usage as a radial progress chart. */}
         <Card className="w-75 flex flex-col rounded-none ring-foreground/0 bg-gray-100">
           <CardContent className="flex h-55 pb-0 border-none">
             <ChartContainer
               config={chartConfig}
               className="mx-auto aspect-square max-h-55"
             >
+              {/* Calculate the chart angle based on the amount of storage used. */}
               <RadialBarChart
                 data={totalChartData}
                 startAngle={90}
@@ -193,6 +202,7 @@ const Page = () => {
           </CardContent>
         </Card>
 
+        {/* Show storage usage based on type as a pie chart. */}
         <Card className="w-75 flex flex-col justify-center p-0 m-0 rounded-none ring-foreground/0 [--card-spacing:0] bg-gray-100">
           <CardContent className="flex justify-center h-70 p-0 m-0">
             <ChartContainer
@@ -200,6 +210,7 @@ const Page = () => {
               className="mx-0 aspect-square max-h-70 [&_.recharts-text]:fill-black"
             >
               <PieChart>
+                {/* Show file type details when hovering over a chart section. */}
                 <ChartTooltip
                   content={<ChartTooltipContent nameKey="type" hideLabel />}
                 />
@@ -209,6 +220,7 @@ const Page = () => {
                   className="stroke-3 stroke-gray-100"
                   stroke="#000"
                 >
+                  {/* Display each file type's label on the chart. */}
                   <LabelList
                     dataKey="type"
                     className="fill-black"
@@ -224,6 +236,7 @@ const Page = () => {
         </Card>
       </div>
 
+      {/* Display the six most recent files with their thumbnails and menu actions. */}
       <div className=" max-w-125 p-6 rounded-lg bg-white border border-t-0 shadow-lg">
         <h3 className="pb-3">Recent Uploads</h3>
         <ul>

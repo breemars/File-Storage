@@ -14,6 +14,7 @@ const DeleteFileModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const path = usePathname();
 
+  // Delete the selected file and close the modal if successful.
   const onSubmit = async () => {
     setIsLoading(true);
 
@@ -31,10 +32,12 @@ const DeleteFileModal = ({
 
   return (
     <div className="flex flex-col gap-5 mt-2">
+      {/* Prompt the user to confirm deletion of the selected file. */}
       <p className="text-center">
         Are you sure you want to delete <b>{file.name}</b>?
       </p>
 
+      {/* Close the modal without deleting the file. */}
       <Button
         onClick={() => setIsModalOpen(false)}
         className="w-full bg-gray-200 text-gray-800 hover:bg-gray-300"
@@ -43,6 +46,7 @@ const DeleteFileModal = ({
         Cancel
       </Button>
 
+      {/* Confirm deletion and show a loading message while processing. */}
       <Button
         onClick={onSubmit}
         className="capitalize w-full hover:bg-red-700"

@@ -5,6 +5,7 @@ import { convertFileSize, formatDate } from "@/lib/utils";
 const FileDetailsModal = ({ file }: { file: Models.DefaultRow }) => {
   return (
     <>
+      {/* Display the file thumbnail and name. */}
       <div className="flex flex-row gap-3 p-2 border rounded-2xl my-2">
         <Thumbnail type={file.type} extension={file.extension} url={file.url} />
         <div className="flex flex-col gap-2 justify-center">
@@ -12,6 +13,7 @@ const FileDetailsModal = ({ file }: { file: Models.DefaultRow }) => {
         </div>
       </div>
 
+      {/* Display the file format, size, owner, and upload dates. */}
       <div className="flex flex-col gap-3">
         <p>
           Format: <b>{file.extension}</b>

@@ -3,14 +3,10 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldGroup } from "@/components/ui/field";
-import { Label } from "@/components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,15 +34,18 @@ import RenameModal from "./RenameModal";
 import DeleteFileModal from "./DeleteFileModal";
 
 const CardActionsDropdown = ({ file }: { file: Models.DefaultRow }) => {
+  // Track the dropdown visibility, modal visibility, and selected file action.
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [action, setAction] = useState<string | null>(null);
 
+  // Set the selected action and open its modal, except for downloads.
   const menuItemClicked = (actionItem: string) => {
     setAction(actionItem);
     if (actionItem !== "download") setIsModalOpen(true);
   };
 
+  // Render the modal that matches the selected file action.
   const renderDialogContent = () => {
     if (!action) return null;
 
@@ -81,6 +80,7 @@ const CardActionsDropdown = ({ file }: { file: Models.DefaultRow }) => {
           <EllipsisVertical className="size-8" strokeWidth={2} />
         </DropdownMenuTrigger>
 
+        {/* Provide options to rename, view details, share, download, or delete the file. */}
         <DropdownMenuContent>
           <DropdownMenuGroup>
             <DropdownMenuLabel className="max-w-200px truncate">
@@ -102,6 +102,7 @@ const CardActionsDropdown = ({ file }: { file: Models.DefaultRow }) => {
               Share
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => menuItemClicked("download")}>
+              {/* Goes to the download URL / downloads the file. */}
               <Link
                 href={constructDownloadUrl(file.bucketFileId)}
                 download={file.name}
@@ -118,6 +119,7 @@ const CardActionsDropdown = ({ file }: { file: Models.DefaultRow }) => {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+      {/* Display the selected action's dialog when needed. */}
       {renderDialogContent()}
     </Dialog>
   );

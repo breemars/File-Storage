@@ -5,12 +5,16 @@ import React from "react";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic"; //required bc we are using cookies
+// Force dynamic rendering because the layout relies on cookies.
+export const dynamic = "force-dynamic";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
+  // Retrieve the currently signed-in user.
+  // Redirect to the sign-in page if no user is found.
   const currentUser = await getCurrentUser();
   if (!currentUser) return redirect("/sign-in");
 
+  // Set up the main layout with navigation and a scrollable content area.
   return (
     <main className="flex h-screen overflow-hidden">
       <DesktopNavigation {...currentUser} />

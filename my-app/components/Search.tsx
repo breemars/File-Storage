@@ -10,19 +10,20 @@ import Thumbnail from "./Thumbnail";
 import { useDebounce } from "use-debounce";
 
 const Search = () => {
+  // Tracks the search input, matching files, dropdown visibility, and debounced query.
   const [query, setQuery] = useState<string>("");
   const [results, setResults] = useState<Models.DefaultRow[]>([]);
   const [open, setOpen] = useState(false);
   const [debouncedQuery] = useDebounce(query, 300);
 
-  //since this is a client component, we have to get the search params a different way than page.tsx
-  const searchParams = useSearchParams();
+  // Reads the current URL query parameters
+  const searchParams = useSearchParams(); //Client specific method for doing so
   const searchQuery = searchParams.get("query") || "";
 
   const router = useRouter();
   const path = usePathname();
 
-  //Clears the search query if I click on a menu button
+  //Clears the search query if I click on a menu button (aka the URL no longer contains a search query)
   useEffect(() => {
     const clearSearch = async () => {
       if (!searchQuery) {
@@ -61,6 +62,7 @@ const Search = () => {
 
   return (
     <>
+      {/* Renders the search icon and controlled search input. */}
       <div className="flex flex-row pl-3 items-center bg-gray-100 border rounded-4xl">
         <SearchIcon />
         <Input
@@ -70,7 +72,7 @@ const Search = () => {
           className="w-70 bg-transparent border-0 focus-visible:ring-0"
         />
       </div>
-
+      {/* Displays matching files in a dropdown, or a message when no files are found. */}
       {open && (
         <div className="absolute top-15 p-2 z-50 rounded-lg bg-white border border-t-0 shadow-lg">
           <ul>

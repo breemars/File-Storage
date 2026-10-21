@@ -2,12 +2,8 @@
 
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
   SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { CircleUserRound, Menu } from "lucide-react";
@@ -33,8 +29,9 @@ const MobileNavigation = ({
   avatar,
   email,
 }: Props) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // Track whether the mobile navigation menu is open.
 
+  // Renders the mobile header and slide-out navigation menu.
   return (
     <header className="fixed top-0 left-0 flex w-full items-center justify-between px-4 py-3 md:hidden bg-white">
       <h2>File Storage</h2>
@@ -44,6 +41,7 @@ const MobileNavigation = ({
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
+            {/* Show the user's avatar or a default icon if none exists. */}
             <div className="flex flex-row items-center gap-2 border-b-8 rounded-4xl p-3 mb-5">
               {avatar ? (
                 <Image
@@ -62,20 +60,22 @@ const MobileNavigation = ({
               </div>
             </div>
 
+            {/* Display the navigation links. */}
             <MenuItems />
 
-            <div className="flex flex-col justify-between gap-5 pb-5">
+            {/* File upload and log out buttons */}
+            <div className="flex flex-row justify-between items-center gap-5 pt-5">
               <FileUploader accountId={accountId} />
 
               <Button
                 type="submit"
-                className="flex flex-row gap-3 bg-rose-100 rounded-4xl w-full justify-center p-3"
+                className="flex flex-row gap-2 bg-rose-100 rounded-4xl justify-center p-2"
                 onClick={async () => {
                   signOutUser();
                 }}
               >
-                <LogOut />
-                <p>Logout</p>
+                <LogOut size={20} />
+                <span>Logout</span>
               </Button>
             </div>
           </SheetHeader>

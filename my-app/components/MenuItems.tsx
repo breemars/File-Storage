@@ -6,8 +6,12 @@ import { usePathname } from "next/navigation";
 import { File, Image, Play, ChartPie, LayoutDashboard } from "lucide-react";
 
 const MenuItems = () => {
+  // Get the current URL path to determine which menu item is active.
   const url = usePathname();
 
+  //Menu navigation buttons
+  //Only shows the labels on small and large screens
+  //Highlights the correlating menu button based on which page the user is on
   return (
     <nav>
       <ul className="flex flex-1 flex-col gap-4 items-center">

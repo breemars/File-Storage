@@ -1,5 +1,5 @@
 "use client"; //bc using next/navigation
-import React from "react";
+
 import {
   Select,
   SelectContent,
@@ -14,12 +14,14 @@ const Sort = () => {
   const path = usePathname();
   const router = useRouter();
 
-  //Dependent on "Select" functionality
+  // Updates the URL with the selected sorting option.
+  //This syntax is dependent on the "Select" functionality
   const handleSort = (sort: { value: string } | null) => {
     if (!sort) return;
     router.push(`${path}?sort=${sort}`);
   };
 
+  // Define sorting options for date, name, and file size.
   const sortTypes = [
     { label: "Date Created - Newest", value: "$createdAt-desc" },
     { label: "Date Created - Oldest", value: "$createdAt-asc" },
@@ -31,6 +33,7 @@ const Sort = () => {
 
   return (
     <div>
+      {/* Display the sorting dropdown. */}
       <Select
         onValueChange={handleSort}
         defaultValue={sortTypes[0]}
@@ -41,6 +44,7 @@ const Sort = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
+            {/* Create a dropdown option for each sorting method. */}
             {sortTypes.map((sort) => (
               <SelectItem key={sort.label} value={sort.value}>
                 {sort.label}
